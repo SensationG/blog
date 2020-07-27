@@ -46,7 +46,7 @@ pinned: true
 - localstorage: 除非被清除，否则永久保存
 
 
-# 基于JWT
+## 基于JWT
 
 ##### JWT是什么
 
