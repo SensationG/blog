@@ -3,8 +3,8 @@ layout: post
 title: 小程序开发笔记+vant UI
 date: 2020-07-27
 Author: hhw
-categories: 
 toc: true
+comments: true
 tags:  [vant-ui, js]
 pinned: true
 ---
@@ -16,7 +16,7 @@ pinned: true
 
 ### 1.修改属性
 
-#### 直接修改data的某个属性
+直接修改data的某个属性
 
 ```javascript
 this.setData({
@@ -25,7 +25,7 @@ this.setData({
 123
 ```
 
-#### 修改data里的数组或对象的属性
+修改data里的数组或对象的属性
 
 ```javascript
 this.setData({
@@ -120,11 +120,11 @@ import Toast from '@vant/weapp/toast/toast';
 
  `columns` 和 `value-key` 属性进行选择器的选项展示。
 
-> #### 通常情况下，Picker搭配输入框Field以及弹出层Popup进行使用，以下是使用示例
+> 通常情况下，Picker搭配输入框Field以及弹出层Popup进行使用，以下是使用示例
 
 ```html
-	<!-- ***通过输入框点击事件，显示Popup弹框，弹框内嵌Picker进行选择 -->
-	<view bindtap="chooseCredentialType" >
+  <!-- ***通过输入框点击事件，显示Popup弹框，弹框内嵌Picker进行选择 -->
+  <view bindtap="chooseCredentialType" >
     <van-field
       required
       label="证件类型"
@@ -135,19 +135,19 @@ import Toast from '@vant/weapp/toast/toast';
   </view>
 
   <!-- 证件类型选择弹出层 
-		show: 是否弹出
-		position: 弹出位置
-	-->
+	show: 是否弹出
+	position: 弹出位置
+  -->
   <van-popup
   show="{{ show }}"
   position="bottom"
   custom-style="height: 30%;"
   >
-    <!-- picker
-			show-toolbar: 显示确认按钮
-			bind:confirm: 确认按钮事件
-			bind:cancel: 取消按钮事件
-		-->
+    	<!-- picker
+		show-toolbar: 显示确认按钮
+		bind:confirm: 确认按钮事件
+		bind:cancel: 取消按钮事件
+	-->
   	<van-picker 
         show-toolbar 
         columns="{{ credentialType }}"
