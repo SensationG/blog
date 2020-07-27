@@ -6,7 +6,6 @@ Author: hhw
 toc: true
 comments: true
 tags:  [SQL,MyBatis]
-pinned: true
 ---
 
 
