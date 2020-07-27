@@ -11,7 +11,7 @@ pinned: true
  认证授权2种方式：Session-Cookie 与 JWT，下面我们就针对这两种方案就行阐述。<br>
  包括两种方式的工作原理以及认证流程。
 
-####  1 基于Session-Cookie
+#### 基于Session-Cookie
 
 ##### 工作原理：
 
@@ -23,12 +23,12 @@ pinned: true
 
 基于Cookie，需要依赖Cookie来保存SessionID，但是实际的Session还是保存在Server端。主要是一个承载SessionID的作用。
 
-##### 优势：
+##### 优势
 
 - 相比JWT，最大的优势就在于可以主动清除session了，JWT只能设置过期时间
 - session保存在服务器端，相对较为安全
 
-##### 劣势：
+##### 劣势
 
 - cookie + Sesssion 跨域存在问题
 
@@ -36,7 +36,7 @@ pinned: true
 
   
 
-##### session、cookie、sessionStorage、localstorage的区别
+##### sessionStorage、localstorage
 
 > session: 主要存放在服务器端，相对安全
 
@@ -48,7 +48,7 @@ pinned: true
 
 
 
-#### 2 基于JWT
+#### 基于JWT
 
 ##### JWT是什么：
 
