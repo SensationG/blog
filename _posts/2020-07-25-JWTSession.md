@@ -20,7 +20,7 @@ pinned: true
 
 当想要清除的话，除了等待Session过期，还可以使用Server注销当前Session，另外也可以清除Client的Cookie。
 
-###### 与Cookie的差别
+**与Cookie的差别**
 
 基于Cookie，需要依赖Cookie来保存SessionID，但是实际的Session还是保存在Server端。主要是一个承载SessionID的作用。
 
