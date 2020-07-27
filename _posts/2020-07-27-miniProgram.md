@@ -9,8 +9,12 @@ tags:  [vant-ui, js]
 pinned: true
 ---
 小程序开发笔记+vant UI
-记录开发时常用组件的使用方法 &
-开发时遇到的问题
+记录开发时常用组件的使用方法 & <br>
+开发时遇到的问题 <br>
+文档：<br>
+(vantUI)[https://youzan.github.io/vant-weapp/#/intro]
+(小程序)[https://developers.weixin.qq.com/miniprogram/dev/component/]
+
 
 ## 表单组件
 
