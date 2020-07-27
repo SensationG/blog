@@ -13,13 +13,13 @@ pinned: true
 
 #### 基于Session-Cookie
 
-##### 工作原理：
+##### 工作原理
 
 当Client输入账号密码后，Server会产生一笔Session记录，同时把SessionID传送回给Client端加密保存在Cookie中（只有Server能解开）。之后再次请求Server，Client就会携带Cookie，其中包含有SessionID，Server根据该SessionID来识别身份，获取到当前用户的Session。
 
 当想要清除的话，除了等待Session过期，还可以使用Server注销当前Session，另外也可以清除Client的Cookie。
 
-###### 与Cookie的差别：
+###### 与Cookie的差别
 
 基于Cookie，需要依赖Cookie来保存SessionID，但是实际的Session还是保存在Server端。主要是一个承载SessionID的作用。
 
@@ -46,11 +46,9 @@ pinned: true
 
 > localstorage: 除非被清除，否则永久保存
 
-
-
 #### 基于JWT
 
-##### JWT是什么：
+##### JWT是什么
 
 > *原名 ( JSON Web Tokens )，基本上就是帶時效的 Token。*
 
@@ -66,11 +64,11 @@ Header.Payload.Signature
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiemhhbmdzYW4ifQ.ec7IVPU-ePtbdkb85IRnK4t4nUVvF2bBf8fGhJmEwSs
 ```
 
-###### Base64Url:
+**Base64Url**
 
 与 BASE64 差在最后的 「 **=** 」 号会去掉，「 **- ` /**」符号会换成底线「 **_** 」， 「**+**」会换成 dash「 **-** 」。
 
-##### JWT的Header：
+##### Header
 
 JWT 的 Header 通常包含两个字段，分别是：typ(type) 和 alg(algorithm)。
 
@@ -93,7 +91,7 @@ JWT 的 Header 通常包含两个字段，分别是：typ(type) 和 alg(algorith
 最终结果是： 'eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9' 
 ```
 
-##### JWT的Payload：
+##### Payload
 
 存放需要传递的信息，例如用户名，邮箱，发布人，过期时间等信息。
 
@@ -123,7 +121,7 @@ jti: 唯一辨识符，JWT 只能使用一次
 eyJ1c2VyX2lkIjoiemhhbmdzYW4ifQ
 ```
 
-##### JWT的Signature：
+##### Signature
 
 Signature对我们前面的 Header 和 Payload 部分进行签名，保证 Token 在传输的过程中没有被篡改或者损坏。
 
@@ -159,7 +157,7 @@ secret可以打上自己想要的。
 
 
 
-##### 优劣：
+##### 优劣
 
 **RESTful API服务**
 
@@ -169,7 +167,7 @@ RESTful API的原则之一是它应该是无状态的，这意味着当发出请
 
 另一个挑战是，由一个服务器提供API，而实际应用程序从另一个服务器调用它的模式是很常见的。为了实现这一点，我们需要启用跨域资源共享（CORS）。Cookie只能用于其发起的域，相对于应用程序，对不同域的API来说，帮助不大。在这种情况下使用JWT进行身份验证可以确保RESTful API是无状态的，你也不用担心API或应用程序由谁提供服务。
 
-**性能：**
+**性能**
 
 - JWT大小远超过SessionID，因此在HTTP请求中，需要更多开销；而对于Session，每个请求需要查找和反序列化Session
 - JWT可能需要访问后端数据库来验证信息，而Session不需要。但可以在登录验证成功后将用户信息存入Redis，从而可以进行快速验证。
