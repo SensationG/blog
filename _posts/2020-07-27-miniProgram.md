@@ -12,7 +12,7 @@ pinned: true
 记录开发时常用组件的使用方法 & <br>
 开发时遇到的问题 <br>
 文档：<br>
-(vantUI)[https://youzan.github.io/vant-weapp/#/intro]
+(vantUI)[https://youzan.github.io/vant-weapp/#/intro] <br>
 (小程序)[https://developers.weixin.qq.com/miniprogram/dev/component/]
 
 
