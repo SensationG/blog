@@ -1,3 +1,13 @@
+---
+layout: post
+title: MySQL索引概要以及失效问题
+date: 2020-06-20
+Author: hhw
+toc: true
+comments: true
+tags:  [MySQL]
+---
+
 本文根据mysql的索引进行总结；<br>
 
 > 先来介绍下索引：<br>
