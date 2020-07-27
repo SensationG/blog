@@ -39,16 +39,16 @@ pinned: true
 
 ##### sessionStorage、localstorage
 
-> session: 主要存放在服务器端，相对安全
+- session: 主要存放在服务器端，相对安全
 
-> cookie: 可设置有效时间，默认是关闭浏览器后失效，主要存放在客户端，并且不是很安全，可存储大小约为4kb
+- cookie: 可设置有效时间，默认是关闭浏览器后失效，主要存放在客户端，并且不是很安全，可存储大小约为4kb
 
-> sessionStorage: 仅在当前会话下有效，关闭页面或浏览器后被清除
+- sessionStorage: 仅在当前会话下有效，关闭页面或浏览器后被清除
 
-> localstorage: 除非被清除，否则永久保存
+- localstorage: 除非被清除，否则永久保存
 
 
-### 基于JWT
+#### 基于JWT
 
 ##### JWT是什么
 
