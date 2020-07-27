@@ -122,7 +122,8 @@ resetQuery() {
   </el-date-picker>
 </el-form-item>
 ```
-js定义如下（vue）
+js定义如下
+
 ```js
 data() {
     return {
@@ -143,6 +144,7 @@ data() {
   }
 }
 ```
+
 ## 6.el-table-column 拼接字符串（或其他属性）
 
 ```html
