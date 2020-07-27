@@ -1,3 +1,13 @@
+ ---
+layout: post
+title: JWT与Session对比
+date: 2020-07-25
+Author: hhw
+toc: true
+comments: true
+tags:  [java]
+pinned: true
+---
  认证授权2种方式：Session-Cookie 与 JWT，下面我们就针对这两种方案就行阐述。<br>
  包括两种方式的工作原理以及认证流程。
 
