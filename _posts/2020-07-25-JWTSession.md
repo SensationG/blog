@@ -11,6 +11,7 @@ pinned: true
  认证授权2种方式：Session-Cookie 与 JWT，下面我们就针对这两种方案就行阐述。<br>
  包括两种方式的工作原理以及认证流程。
 
+
 #### 基于Session-Cookie
 
 ##### 工作原理
@@ -46,7 +47,8 @@ pinned: true
 
 > localstorage: 除非被清除，否则永久保存
 
-#### 基于JWT
+
+### 基于JWT
 
 ##### JWT是什么
 
