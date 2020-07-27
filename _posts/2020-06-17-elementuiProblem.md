@@ -100,7 +100,7 @@ resetQuery() {
 </el-form-item>
 ```
 ## 5.日期（时间）选择器校验，要求结束时间大于开始时间
-这里不使用时间范围组件(`type = range`)，而是通过两个分离的时间选择框，也就是`type = date`，那么该怎么进行校验？<br>
+这里不使用时间范围组件`type = range`，而是通过两个分离的时间选择框，也就是`type = date`，那么该怎么进行校验？<br>
 这里以日期选择器为例子：使用:picker-options属性配合校验，并在data中定义相关规则
   
 ```html
@@ -124,7 +124,7 @@ resetQuery() {
 ```
 js定义如下
 
-```
+```js
 data() {
     return {
       // disabledDate 限制不能选择的时间范围 --> 这里是大于结束时间的日期都不能选择
