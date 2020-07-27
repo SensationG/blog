@@ -83,8 +83,8 @@ MySQL的mysqli驱动提供了预编译语句的支持，不同的程序语言，
 
 #### 2.mySQL预编译功能
 
-下面我们来看一下MySQL中预编译语句的使用。
-  （1）建表 首先我们有一张测试表t，结构如下所示：
+下面我们来看一下MySQL中预编译语句的使用。<br>
+（1）建表 首先我们有一张测试表t，结构如下所示：
 
 ```
 mysql> show create table t\G
@@ -97,9 +97,9 @@ Create Table: CREATE TABLE `t` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ```
 
-　（2）编译
+（2）编译
 
-　　我们接下来通过 `PREPARE stmt_name FROM preparable_stm`的语法来预编译一条sql语句
+　我们接下来通过 `PREPARE stmt_name FROM preparable_stm`的语法来预编译一条sql语句
 
 ```
 mysql> prepare ins from 'insert into t select ?,?';
@@ -107,9 +107,9 @@ Query OK, 0 rows affected (0.00 sec)
 Statement prepared
 ```
 
-　（3）执行
+（3）执行
 
-　　我们通过`EXECUTE stmt_name [USING @var_name [, @var_name] ...]`的语法来执行预编译语句
+　我们通过`EXECUTE stmt_name [USING @var_name [, @var_name] ...]`的语法来执行预编译语句
 
 ```
 mysql> set @a=999,@b='hello';
@@ -128,9 +128,9 @@ mysql> select * from t;
 1 row in set (0.00 sec)
 ```
 
-　　可以看到，数据已经被成功插入表中。
+可以看到，数据已经被成功插入表中。
 
-　　MySQL中的预编译语句作用域是session级，但我们可以通过max_prepared_stmt_count变量来控制全局最大的存储的预编译语句。
+MySQL中的预编译语句作用域是session级，但我们可以通过max_prepared_stmt_count变量来控制全局最大的存储的预编译语句。
 
 ```
 mysql> set @@global.max_prepared_stmt_count=1;
@@ -142,8 +142,8 @@ ERROR 1461 (42000): Can't create more than max_prepared_stmt_count statements (c
 
 当预编译条数已经达到阈值时可以看到MySQL会报如上所示的错误。
 
-  （4）释放
-　　如果我们想要释放一条预编译语句，则可以使用`{DEALLOCATE | DROP} PREPARE stmt_name`的语法进行操作:
+（4）释放
+如果我们想要释放一条预编译语句，则可以使用`{DEALLOCATE | DROP} PREPARE stmt_name`的语法进行操作:
 
 ```
 mysql> deallocate prepare ins;
@@ -154,7 +154,7 @@ Query OK, 0 rows affected (0.00 sec)
 
 > **原理是采用了预编译的方法，先将SQL语句中可被客户端控制的参数集进行编译，生成对应的临时变量集，再使用对应的设置方法，为临时变量集里面的元素进行赋值，赋值函数setString()，会对传入的参数进行强制类型检查和安全检查，所以就避免了SQL注入的产生。下面具体分析**
 
-　**（1）为什么Statement会被sql注入**
+**（1）为什么Statement会被sql注入**
 
 　　因为Statement之所以会被sql注入是因为SQL语句结构发生了变化。比如：
 
@@ -163,7 +163,7 @@ Query OK, 0 rows affected (0.00 sec)
 "'and password='"+password+"'"
 ```
 
-　　在用户输入'or true or'之后sql语句结构改变。
+在用户输入'or true or'之后sql语句结构改变。
 
 ```
 select*from tablename where username=''or true or'' and password=''
@@ -171,9 +171,9 @@ select*from tablename where username=''or true or'' and password=''
 
 　　这样本来是判断用户名和密码都匹配时才会计数，但是经过改变后变成了或的逻辑关系，不管用户名和密码是否匹配该式的返回值永远为true;
 
-　**（2）为什么Preparement可以防止SQL注入。**
+**（2）为什么Preparement可以防止SQL注入。**
 
-　　因为Preparement样式为
+因为Preparement样式为
 
 ```
 select*from tablename where username=? and password=?
