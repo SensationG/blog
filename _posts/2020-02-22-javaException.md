@@ -5,8 +5,9 @@ date: 2020-04-10
 Author: hhw
 toc: true
 comments: true
-tags:  [Java]
+tags:  [java]
 ---
+
 ## 问题：
 写业务代码的时候发现了一个问题，处理异常的时候需要使用`try catch`捕获还是使用`throw` 抛出，这二者在代码执行流程上有何区别？`try catch`之后的代码还会执行吗？
 ## 测试：
