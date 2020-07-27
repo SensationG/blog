@@ -4,8 +4,9 @@ title: 小程序开发笔记+vant UI
 date: 2020-07-27
 Author: hhw
 categories: 
+toc: true
 tags:  [vant-ui, js]
-comments: false
+pinned: true
 ---
 小程序开发笔记+vant UI
 记录开发时常用组件的使用方法 &
