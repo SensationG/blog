@@ -12,7 +12,7 @@ pinned: true
  包括两种方式的工作原理以及认证流程。
 
 
-#### 基于Session-Cookie
+### 基于Session-Cookie
 
 ##### 工作原理
 
@@ -46,7 +46,7 @@ pinned: true
 - localstorage: 除非被清除，否则永久保存
 
 
-#### 基于JWT
+# 基于JWT
 
 ##### JWT是什么
 
