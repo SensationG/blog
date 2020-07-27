@@ -147,7 +147,7 @@ data() {
 
 ## 6.el-table-column 拼接字符串（或其他属性）
 
-```html
+```
 <el-table v-loading="accompanyLoading" :data="studentList" >
    <!-- 拼接格式化的时间，来自两个不同的属性 -->    
   <el-table-column label="陪伴时间" align="center">
@@ -163,7 +163,7 @@ data() {
 解决：使用 v-if 控制 tabs 中的内容渲染时间，当该tabs显示的时候再渲染表格; **v-if可能有性能问题**
 
 
-```html
+```
 <el-tabs v-model="tab" type="card">
     <el-tab-pane label="xxx" name="first">
         <!-- 内容 -->
@@ -180,7 +180,7 @@ data() {
 **原因**：当表单只有一个输入框时，就会造成该现象；<br>
 **解决**：在el-form便签里加上 @submit.native.prevent 即可
 
-```html
+```
 <!-- 在这里加 @submit.native.prevent -->
 <el-form @submit.native.prevent/>
 	<el-form-item>
