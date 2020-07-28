@@ -12,12 +12,12 @@ tags:  [java]
 
 ### 基本类型与引用类型
 
+<img src="https://raw.githubusercontent.com/SensationG/images/master/20200728162839.png" alt="image-20200728151855902" style="zoom:50%;" />
+
 ```java
 int num = 10;
 String str = "hello";
 ```
-
-<img src="https://raw.githubusercontent.com/SensationG/images/master/20200728162839.png" alt="image-20200728151855902" style="zoom:50%;" />
 
 num是基本类型，值就直接保存在变量中。
 
