@@ -5,7 +5,7 @@ date: 2020-07-27
 Author: hhw
 toc: true
 comments: true
-tags:  [vant-ui, js]
+tags:  [vant-ui, JS]
 pinned: true
 ---
 小程序开发笔记+vant UI
