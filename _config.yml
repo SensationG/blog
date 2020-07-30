@@ -7,7 +7,7 @@
 # 井号后面的文字是说明文档，不会被程序读取。
 
 # 描述/签名
-name: Sensation Blog
+name: Sensation ‘s
 description: 开发笔记
 
 # 输入你的网站域名（如果你没有添加自己的域名，而是直接用GitHub pages分配的域名的话可以省略）
@@ -56,7 +56,7 @@ footer-links:
   facebook: #https://www.facebook.com/<>
   flickr: #https://www.flickr.com/<>
   github: #FromEndWorld/loffer #https://github.com/<>
-  instagram: #https://instagram.com/<>
+  instagram: https://www.instagram.com/sensationhhw/
   linkedin: #https://www.linkedin.com/in/<>
   pinterest: #https://www.pinterest.com/<>
   rss: #随便填点啥RSS就能用了
@@ -66,7 +66,7 @@ footer-links:
   youtube: # channel/<your_long_string> or user/<user-name>
 
 # 站点页脚的文字
-footer-text: By (c) 2020 黄浩韦华
+footer-text:  2020 by 黄浩韦华
 
 #
 # 评论，注意，请不要同时添加多种不同的评论区
