@@ -206,6 +206,65 @@ onCredentialTypeClose() {
 }
 ```
 
+### 5.van-Radio
+
+由于官方文档只给出了块级元素的排列规则，如果我们想要把多个单选按钮排在同一行输入框表单中，就需要作出修改。
+
+**原官方：**
+
+<img src="https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20200730113738.png" alt="image-20200730112928644" style="zoom:50%;" />
+
+**先给出目标效果图：**
+
+<img src="https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20200730113731.png" alt="image-20200730113712052" style="zoom:50%;" />
+
+**思路：**我们可以利用输入框 `van-field` 提供的button插槽将 `van-Radio` 置入输入框中，然后将原输入框的显示区域设为none，再调整Radio的位置即可。
+
+**开始整改：**
+
+- 首先将Radio嵌入field，设置 `van-field` 的 `use-button-slot` 属性为true
+- 在要被嵌入的 `van-radio-group` 标签设置 `slot="button"`，即可完成嵌入
+
+```html
+<van-field
+    label="性别"
+    required
+    use-button-slot   
+    readonly
+    class="f1"
+    error-message="{{ sexMsg }}"
+  >
+  <van-radio-group data-name="sex" bind:change="onFormChange" value="{{ form.sex }}" 	            slot="button">
+    <van-row>
+      <van-col span="12" wx:for="{{ sexOption }}" wx:key="key">
+        <van-radio 
+          name="{{ item.dictValue }}"
+        >
+          {{ item.dictLabel }}
+        </van-radio>
+      </van-col>
+    </van-row>
+  </van-radio-group>
+</van-field>
+```
+
+- 对样式进行调整
+
+```css
+/* 单选框样式 */
+.f1 .van-field__input {
+  display: none;
+}
+/* 插槽宽度调整 */
+.f1 .van-field__button {
+  width: 250px;
+}
+```
+
+- JS绑定Radio即可
+
+  
+
 ## 表单校验
 
 使用官方社区开发的WxValidate进行表单校验
@@ -358,6 +417,8 @@ initValidate() {
 }
 ```
 
+> 表单校验前使用`WxValidate.checkForm(this.data.form)`进行校验
+
 ```js
 // 表单提交
 submit() {
@@ -378,6 +439,8 @@ showModal(error) {
 }
 ```
 
+
+
 #### 自定义校验规则
 
 addMethod(name, method, message) - 添加自定义校验。包含三个参数，name：添加的方法的名字；method：校验方法，在这里添加自定义校验规则，返回true/false；message：自定义错误提示；
@@ -396,6 +459,7 @@ initValidate() {
       required:true,
       tel:true
     },
+    
     // 使用自定义校验
     credentialNumber: {
       required: true,
