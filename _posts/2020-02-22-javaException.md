@@ -3,7 +3,6 @@ layout: post
 title: Java异常抛出后还会执行吗？
 date: 2020-02-22
 Author: hhw
-toc: true
 comments: true
 tags:  [java]
 ---
@@ -44,7 +43,7 @@ tags:  [java]
         }
         return 1; //catch中retun了，这里不会执行
     }
-    ```
+     ```
     结论：如果我们不想后续的程序终止，可以使用捕获的方式；并且通过改变return的位置来控制返回的结果。
 - 案例三
 

@@ -12,12 +12,12 @@ tags:  [JS,前端,安全]
 
 - XSS攻击
 - CSRF攻击
-- SQL注入攻击
+- [SQL注入攻击](https://sensationg.github.io/blog/SQLInjectionAttack/)
 - 文件上传漏洞
 - DDoS攻击
 - 其他攻击手段
 
-本文主要介绍前两种，第三种SQL注入已经在另外一篇提及。[SQL注入](https://sensationg.github.io/blog/SQLInjectionAttack/)<br>
+本文主要介绍前两种，第三种SQL注入已经在另外一篇提及。
 
 ## 一、XSS漏洞
 
