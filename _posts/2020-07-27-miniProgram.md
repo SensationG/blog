@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 小程序开发笔记+vant UI
+title: 小程序 + vant UI开发笔记
 date: 2020-07-27
 Author: hhw
 toc: true
@@ -40,6 +40,8 @@ this.setData({
 ### 2.双向绑定
 
 > 由于小程序只能双向绑定属性，无法双向绑定对象中的属性，所以只能自定义方法进行绑定。
+>
+> 以下是针对field输入框的绑定样例
 
 ```js
 data: {
@@ -98,6 +100,126 @@ wxml：
 </van-cell-group>
 ```
 
+> ”
+>
+> 以上只针对简单的field输入框进行绑定，如果是picker还需要修改
+>
+> “
+
+**picker通用绑定方法 **（除picker日期外）
+
+```js
+// picker(除日期)通用绑定
+onConfirm(event) {
+  const name = event.currentTarget.dataset.name;
+  const dataName = 'form.' + name;
+  const value = event.detail.value;
+  this.setData({
+   // 绑定表单
+ 	 [dataName]: value.dictValue,
+   // 回显
+ 	 [name]: value.dictLabel,
+  })
+  this.onClose();
+},
+```
+
+```html
+ <van-field
+    required
+    label="证件类型"
+    placeholder="请选择证件类型"
+    value="{{ credentialType }}"
+    readonly
+    data-name="showCredentialType"
+    bindtap="onOpen"
+    error-message="{{ credentialTypeMsg }}"
+  />
+  <!-- 证件类型选择弹出层 -->
+  <van-popup
+  show="{{ showCredentialType }}"
+  position="bottom"
+  custom-style="height: 30%;"
+  >
+    <van-picker 
+      show-toolbar 
+      data-name="credentialType"
+      columns="{{ credentialTypeOption }}"
+      value-key="dictLabel"
+      title="请选择证件类型" 
+      bind:confirm="onConfirm"
+      bind:cancel="onClose" />
+  </van-popup>
+```
+
+**picker日期绑定方法**
+
+需要调用时间格式化方法和时间戳
+
+```js
+// picker日期通用绑定
+onDate(e) {
+  const name = e.currentTarget.dataset.name;
+  const dataName = 'form.' + name;
+  const value = e.detail;
+  // 关闭弹框+时间格式化
+  this.onClose();
+  let res = this.formatterTime(value);
+  this.setData({
+    [name]: res,
+    // 回显
+    [dataName]: value,
+  })
+},
+// 时间格式化
+  formatterTime(time){
+    //创建对象
+    let date = new Date(time);
+    //获取年份
+    let y = date.getFullYear();
+    //获取月份  返回0-11
+    let m =date.getMonth()+1;
+    // 获取日
+    let d = date.getDate();
+    //获取星期几  返回0-6   (0=星期天)
+    let w = date.getDay();
+    //星期几
+    let ww = ' 星期'+'日一二三四五六'.charAt(date.getDay()) ;
+    //时
+    let h = date.getHours();
+    //分
+    let minute = date.getMinutes()
+    //秒
+    let s = date.getSeconds();
+    //毫秒
+    let sss = date.getMilliseconds() ;
+
+    if(m<10){
+      m = "0"+m;
+    }
+    if(d<10){
+      d = "0"+d;
+    }
+    if(h<10){
+      h = "0"+h;
+    }
+    if(minute<10){
+      minute = "0"+minute;
+    }
+    if(s<10){
+      s = "0"+s;
+    }
+    if(sss<10){
+      sss = "00"+sss;
+    }else if(sss<100){
+      sss = "0"+sss;
+    }
+    return y+"-"+m+"-"+d;
+  }
+```
+
+
+
 ### 3.Toast提示
 
 报错问题：
@@ -128,37 +250,33 @@ import Toast from '@vant/weapp/toast/toast';
 
 ```html
   <!-- ***通过输入框点击事件，显示Popup弹框，弹框内嵌Picker进行选择 -->
-  <view bindtap="chooseCredentialType" >
-    <van-field
-      required
-      label="证件类型"
-      placeholder="请选择证件类型"
-      value="{{ credentialName }}"
-      readonly
-    />
-  </view>
+<van-field
+    required
+    label="证件类型"
+    placeholder="请选择证件类型"
+    value="{{ credentialType }}"
+    readonly
+    data-name="showCredentialType"
+    bindtap="onOpen"
+    error-message="{{ credentialTypeMsg }}"
+  />
 
-  <!-- 证件类型选择弹出层 
-	show: 是否弹出
-	position: 弹出位置
-  -->
+  <!-- 证件类型选择弹出层 show: 是否弹出 position: 弹出位置 -->
   <van-popup
-  show="{{ show }}"
+  show="{{ showCredentialType }}"
   position="bottom"
   custom-style="height: 30%;"
   >
-    	<!-- picker
-		show-toolbar: 显示确认按钮
-		bind:confirm: 确认按钮事件
-		bind:cancel: 取消按钮事件
-	-->
+    	<!-- picker show-toolbar 显示确认按钮 bind:confirm 确认按钮事件 bind:cancel 取消按钮 				       事件 value-key显示遍历的内部属性值
+			-->
   	<van-picker 
         show-toolbar 
-        columns="{{ credentialType }}"
+        data-name="credentialType"
+        columns="{{ credentialTypeOption }}"
         value-key="dictLabel"
         title="请选择证件类型" 
-        bind:confirm="onCredentialTypeConfirm"
-        bind:cancel="onCredentialTypeClose" 
+        bind:confirm="onConfirm"
+        bind:cancel="onClose" 
      />
   </van-popup>
 ```
@@ -177,33 +295,44 @@ data: {
     credentialType: '',
     credentialNumber: '',
   },
-  // 选中后的证件类型回显
-  credentialName: '',
   // 证件类型,这里实际上是从数据字典获取，这里是模拟数据。
-  credentialType: [{dictLabel:'身份证', dictValue: 1},{dictLabel:'港澳通行证', dictValue: 2},   {dictLabel:' 台湾通行证', dictValue: 3},{dictLabel:'护照', dictValue: 4}],
+  credentialTypeOption: [{dictLabel:'身份证', dictValue: 1},{dictLabel:'港澳通行证', dictValue: 2},   {dictLabel:' 台湾通行证', dictValue: 3},{dictLabel:'护照', dictValue: 4}],
   // 证件类型选择弹出层
-  show: false
+  showCredentialType: false
 },
-// 点击输入框事件
-chooseCredentialType() {
-    this.setData({
-      show:true
-    })
+// 通用弹出层弹出事件
+onOpen(e) {
+  const name = e.currentTarget.dataset.name;
+  this.setData({
+    [name]: true,
+  })
 },
-// Picker 确认按钮事件
+// Picker 双向绑定
 onCredentialTypeConfirm(event) {
+   const name = event.currentTarget.dataset.name;
+   const dataName = 'form.' + name;
+   const value = event.detail.value;
+  
    this.setData({
-      show: false,
-      'form.credentialType': event.detail.value.dictValue,
-      credentialName: event.detail.value.dictLabel
+      // 绑定表单
+      [dataName]: value.dictValue,
+      // 回显
+      [name]: value.dictLabel,
    })
+   this.onClose();
 },
-// Picker 取消按钮事件
-onCredentialTypeClose() {
-   this.setData({
-      show:false
-   })
-}
+// 所有弹出层关闭事件
+onClose() {
+  this.setData({
+    showNation: false,
+    showCredentialType: false,
+    showBirthday: false,
+    showLearn: false,
+    showMarriageTime: false,
+    showLifeStatus: false,
+    textareaHidden: false
+  })
+},
 ```
 
 ### 5.van-Radio
