@@ -630,3 +630,68 @@ initValidate() {
 
 
 
+## 路由导航
+
+### 1.导航组件navigator
+
+```html
+<!-- Sample --> 
+<navigator url="../form/form" >组件跳转测试</navigator>
+```
+
+URL适用于跳转小程序内的链接。[开发文档](https://developers.weixin.qq.com/miniprogram/dev/component/navigator.html)。可以通过设置open-type属性来切换跳转方式，默认是navigateBack。
+
+![image-20200803172521241](https://raw.githubusercontent.com/SensationG/images/master/note/20200803193046.png)
+
+如何跳转其他小程序？
+
+修改target属性-->设置app-id属性为目标小程序的appid，path属性可以设置要打开目标小程序的页面路径--->extra-data属性可以用于传参。具体见开发文档。
+
+### 2.wx.navigateTo
+
+```js
+wx.navigateTo({
+	url: '../form/form',
+  success(res) {
+     res.eventChannel.emit('acceptDataFromOpenerPage', { data: 'test' })
+  }
+})
+```
+
+保留当前页面，跳转到应用内的某个页面。但是不能跳到 tabbar 页面。url后可以携带参数。
+
+如何向被打开页面传送参数？使用success回调函数，如上
+
+被打开页面接收：
+
+```js
+// 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
+const eventChannel = this.getOpenerEventChannel()
+eventChannel.on('acceptDataFromOpenerPage', function(data) {
+  console.log(data)
+})
+```
+
+
+
+使用 [wx.navigateBack](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateBack.html) 可以返回到原页面。小程序中页面栈最多十层。
+
+### 3.wx.navigateBack
+
+关闭当前页面，返回上一页面或多级页面。可通过 [getCurrentPages](https://developers.weixin.qq.com/miniprogram/dev/reference/api/getCurrentPages.html) 获取当前的页面栈，决定需要返回几层。
+
+[API](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateBack.html)
+
+### 4.wx.redirectTo
+
+关闭当前页面，跳转到应用内的某个页面。但是不允许跳转到 tabbar 页面。
+
+[传值](https://developers.weixin.qq.com/community/develop/doc/000c2a15418d608d1f6ace42156c00)
+
+### 5.wx.reLaunch
+
+关闭所有页面，打开到应用内的某个页面
+
+### 6.wx.switchTab
+
+跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
