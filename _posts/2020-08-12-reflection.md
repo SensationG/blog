@@ -22,7 +22,7 @@ Class.forName("com.mysql.jdbc.Driver");  //注册数据库驱动
 
 
 
-### 一、反射是什么
+## 一、反射是什么
 
 ​		一般情况下，我们使用某个类时必定知道它是什么类，是用来做什么的。于是我们直接对这个类进行实例化，之后使用这个类对象进行操作。
 
@@ -140,7 +140,7 @@ setKindMethod.invoke(appleObj, "red"); // 反射实例，方法参数
 
 ![image-20200812093943295](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20200812094302.png)
 
-### 二、反射常用API
+## 二、反射常用API
 
 在 JDK 中，反射相关的 API 可以分为下面几个方面：获取反射的 Class 对象、通过反射创建类对象、通过反射获取类属性方法及构造器。
 
