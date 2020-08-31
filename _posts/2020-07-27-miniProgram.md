@@ -696,3 +696,42 @@ eventChannel.on('acceptDataFromOpenerPage', function(data) {
 
 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
 
+## 小程序发布体验版
+
+注：由于小程序开发版仅供开发人员自己测试（测试号(APPID)仅供开发人员自己的微信账号测试），倘若需要将开发中的小程序提供给其他人测试使用，那么需要<u>发布小程序体验版</u>。
+
+**步骤一：去小程序后台填写相关信息**
+
+[小程序后台链接](https://mp.weixin.qq.com/)
+
+登入完成后，点击首页--->点击完善按钮
+
+![image-20200831092932231](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20200831105004.png)
+
+*由于图中信息已经填写完成，所以是查看详情按钮，若未填写完成，则是完善信息按钮。
+
+**步骤二：完善基本信息**
+
+因为是发布体验版，所以这里不需要审核，基本信息如实填写即可
+
+**步骤三：添加体验成员**
+
+点击成员管理，将需要使用体验版的微信号添加到体验成员列表
+
+![image-20200831093428817](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20200831105010.png)
+
+直接搜索微信号添加即可
+
+**步骤四：上传代码**
+
+打开微信开发者工具，点击上传按钮
+
+![image-20200831093543513](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20200831105014.png)
+
+**步骤五：到小程序后台将此次上传版本设置为体验版**
+
+![image-20200831093724719](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20200831105019.png)
+
+设置完成后，扫描体验版的二维码即可访问
+
+<img src="https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20200831105023.png" alt="image-20200831093755541" style="zoom: 33%;" />
