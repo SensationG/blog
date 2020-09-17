@@ -632,7 +632,7 @@ initValidate() {
 
 ## 路由导航
 
-### 1.导航组件navigator
+**1.导航组件navigator**
 
 ```html
 <!-- Sample --> 
@@ -647,7 +647,7 @@ URL适用于跳转小程序内的链接。[开发文档](https://developers.weix
 
 修改target属性-->设置app-id属性为目标小程序的appid，path属性可以设置要打开目标小程序的页面路径--->extra-data属性可以用于传参。具体见开发文档。
 
-### 2.wx.navigateTo
+**2.wx.navigateTo**
 
 ```js
 wx.navigateTo({
@@ -676,23 +676,23 @@ eventChannel.on('acceptDataFromOpenerPage', function(data) {
 
 使用 [wx.navigateBack](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateBack.html) 可以返回到原页面。小程序中页面栈最多十层。
 
-### 3.wx.navigateBack
+**3.wx.navigateBack**
 
 关闭当前页面，返回上一页面或多级页面。可通过 [getCurrentPages](https://developers.weixin.qq.com/miniprogram/dev/reference/api/getCurrentPages.html) 获取当前的页面栈，决定需要返回几层。
 
 [API](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateBack.html)
 
-### 4.wx.redirectTo
+**4.wx.redirectTo**
 
 关闭当前页面，跳转到应用内的某个页面。但是不允许跳转到 tabbar 页面。
 
 [传值](https://developers.weixin.qq.com/community/develop/doc/000c2a15418d608d1f6ace42156c00)
 
-### 5.wx.reLaunch
+**5.wx.reLaunch**
 
 关闭所有页面，打开到应用内的某个页面
 
-### 6.wx.switchTab
+**6.wx.switchTab**
 
 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
 
@@ -884,4 +884,74 @@ format(t) {
 ```
 
 完整代码已上传GitHub: https://github.com/SensationG/wxminiprogram-component
+
+## 获得用户昵称和头像
+
+**方式一 **
+
+使用官方Open-data标签，不需要用户授权就可以直接获取头像和昵称
+
+```html
+ <open-data type="userAvatarUrl"></open-data>  //获取用户头像直接显示在小程序中
+ <open-data type="userNickName" lang="zh_CN"></open-data>  //获取用户昵称直接显示在小程序中
+```
+
+**方式二**
+
+使用button配合open-type，此方式会弹出用户授权提示框，需要用户手动确认
+
+```html
+<button open-type='getUserInfo' lang="zh_CN" bindgetuserinfo="onGotUserInfo"></button>
+```
+
+```js
+onGotUserInfo: function (e) {
+  console.log("nickname=" + e.detail.userInfo.nickName);
+}
+```
+
+## 轮播图组件
+
+使用官方的轮播图组件swiper + swiper-item [文档](https://developers.weixin.qq.com/miniprogram/dev/component/swiper.html)
+
+使用示例：
+
+```html
+<!-- 轮播图 -->
+<view class="swiper_pic">
+  <swiper indicator-dots="{{indicatorDots}}"
+          autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" style="height: 200px;">
+    <block wx:for="{{background}}" wx:for-item="item" wx:key="*this">
+      <swiper-item>
+        <image src="{{ item }}" mode="scaleToFill" class="pic"/>
+      </swiper-item>
+    </block>
+  </swiper>
+</view>
+```
+
+js参数
+
+```js
+// 图片链接
+background: ['https://raw.githubusercontent.com/SensationG/images/master/note/20200908170304.png', 'https://raw.githubusercontent.com/SensationG/images/master/note/20200908170734.png', 'https://raw.githubusercontent.com/SensationG/images/master/note/20200908165205.png'],
+ // 是否显示面板指示点
+ indicatorDots: true,
+ // 滑动方向是否为纵向
+ vertical: false,
+ // 自动播放
+ autoplay: true,
+ // 自动切换时间间隔
+ interval: 4000,
+ // 滑动动画时长
+ duration: 500
+```
+
+
+
+
+
+
+
+
 
