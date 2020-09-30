@@ -23,7 +23,7 @@ tags:  [ElementUI,Vue,JS]
 ```
 并且使用`label-width="100px"`来控制表单输入框的宽度从而控制一行输入框的个数
 如下
- 
+
 ```
 <el-form-item label="参加活动情况:" label-width="100px">
     <el-input></el-input>
@@ -88,7 +88,7 @@ resetQuery() {
 ## 4.表单的clearable属性/回车方法
 `clearable`作用在输入框上，作用：输入框是否显示清空按钮，
 `@keyup.enter.native="handleQuery"` 激活回车方法，如下：
- 
+
 ```html
 <el-form-item label="姓名" prop="trueName">
     <el-input
@@ -102,7 +102,7 @@ resetQuery() {
 ## 5.日期（时间）选择器校验，要求结束时间大于开始时间
 这里不使用时间范围组件`type = range`，而是通过两个分离的时间选择框，也就是`type = date`，那么该怎么进行校验？<br>
 这里以日期选择器为例子：使用`:picker-options`属性配合校验，并在data中定义相关规则
-  
+
 ```html
 <!-- 截取表单的时间选择部分 注意使用属性 :picker-options 来限制选择 -->
 <el-form-item label="开始时间" prop="startTime" >
@@ -187,4 +187,30 @@ data() {
 		<el-input v-model="query"></el-input>
 	</el-form-item>
 </el-form>
+```
+
+## 9. 使用tab后分页按钮被遮挡问题
+
+调整css
+
+```css
+.pagination-container {
+    height: 58px;
+ }
+```
+
+
+
+## 10. 其他问题
+
+后端@JsonFormat无法接收前端js new date的时间问题：需要把时间手动用字符串拼接才能被后端正确识别
+
+```js
+// js月份 从0-11
+let month = now.getMonth() + 1
+let nowTime = now.getFullYear() + '-' + month + '-' + now.getDate()
+let query = {
+  activityEndTime: nowTime,
+  courseType: type
+}
 ```
