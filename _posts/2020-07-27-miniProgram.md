@@ -672,6 +672,20 @@ eventChannel.on('acceptDataFromOpenerPage', function(data) {
 })
 ```
 
+** 这里可能会出现接收不到的情况，这时需要使用Promise函数等待传参过来后再执行：
+
+```js
+ new Promise((resolve,reject) => {
+   const eventChannel = this.getOpenerEventChannel()
+   eventChannel.on('enrollPerson', function(data) {
+     console.log(data)
+     resolve()
+   })
+ }).then(res => {
+
+ })
+```
+
 
 
 使用 [wx.navigateBack](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateBack.html) 可以返回到原页面。小程序中页面栈最多十层。
