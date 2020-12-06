@@ -72,7 +72,7 @@ public void compressionPhoto(Long[] photoIds, CulturePhoto culturePhoto) {
 }
 ```
 
-![image-20201206202343257](2020-11-27-minioZipDownload.assets/image-20201206202343257.png)
+![image-20201206202343257](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20201206203853.png)
 
 看控制台，会发现，页面发出请求后，主线程会返回，而内置的线程池会新开线程，在后台执行任务。此时页面不用等待，可以继续其他操作。
 
