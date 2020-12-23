@@ -14,6 +14,8 @@ tags:  [Java,InputStream,OutputStream]
 > 本文记录文件流读写操作过程、将文件填入response返回给前端进行下载
 >
 > 本文只是简要地概述了输入输出流使用，详细的流操作和流概念等待之后再做笔记
+>
+> [参考](https://www.cnblogs.com/zhaoyanjun/p/6292384.html)
 
 #### 流的概念
 
