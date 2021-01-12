@@ -130,6 +130,93 @@ stream.close();
 
   `len` - 要写入的字节数。
 
+附：新建临时文件方法
+
+```java
+/**
+ * 新建临时文件(存放流文件)
+ */
+public static String getTempFile() {
+    //时间格式化格式
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+
+    String timeStamp = simpleDateFormat.format(new Date());
+    String sRandom = CMyString.numberToStr(Math.round(Math.random() * 10000.0D), 4, '0');
+    String tempFile = timeStamp + sRandom + ".tmp";
+
+    // 创建存储文件夹
+    File storageDir = new File(FileUploadConfig.getProtect());
+    if (!storageDir.exists()) {
+        storageDir.mkdirs();
+    }
+    File zipFile = new File(FileUploadConfig.getProtect() + tempFile);
+    if (!zipFile.exists()) {
+        try {
+            zipFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    String tempFilePath = FileUploadConfig.getProtect() + tempFile;
+    return tempFilePath;
+}
+
+/**
+ * 新建导出的压缩文件
+ */
+public static String getZipFileName() {
+    //时间格式化格式
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+    // 创建存储文件夹
+    File storageDir = new File(FileUploadConfig.getProtect());
+    if (!storageDir.exists()) {
+        storageDir.mkdirs();
+    }
+
+    String timeStamp = simpleDateFormat.format(new Date());
+    String sRandom = CMyString.numberToStr(Math.round(Math.random() * 10000.0D), 4, '0');
+    String fileName = timeStamp + sRandom + ".zip";
+    File zipFile = new File(FileUploadConfig.getProtect() + fileName);
+
+    if (!zipFile.exists()) {
+        try {
+            zipFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    String filePath = FileUploadConfig.getProtect() + fileName;
+    return filePath;
+}
+
+/**
+ * 新建文件
+ */
+public static String getFileName(String ext) {
+    //时间格式化格式
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+    // 创建存储文件夹
+    File storageDir = new File(FileUploadConfig.getProtect());
+    if (!storageDir.exists()) {
+        storageDir.mkdirs();
+    }
+    //获取当前时间并作为时间戳+随机数给文件夹命名
+    String timeStamp = simpleDateFormat.format(new Date());
+    String sRandom = CMyString.numberToStr(Math.round(Math.random() * 10000.0D), 4, '0');
+    String fileName = timeStamp + sRandom + ext;
+    File zipFile = new File(FileUploadConfig.getProtect() + fileName);
+    if (!zipFile.exists()) {
+        try {
+            zipFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    String filePath = FileUploadConfig.getProtect() + fileName;
+    return filePath;
+}
+```
+
 **举例二：文件File对象填入HttpServletResponse的输出流**
 
 ```java
