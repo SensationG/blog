@@ -6,7 +6,6 @@ Author: hhw
 toc: true
 comments: true
 tags:  [vant-ui, JS]
-pinned: true
 ---
 小程序开发笔记+vant UI
 记录开发时常用组件的使用方法 & <br>
