@@ -6,7 +6,6 @@ Author: hhw
 comments: true
 toc: true
 tags:  [MySQL,Redis]
-pinned: true
 ---
 
 本文记录MySQL与Redis缓存同步的两种方案，这里只探讨思路
