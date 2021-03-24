@@ -128,7 +128,7 @@ cloud万变不离其宗：
 
 Dubbo和SpringCloud的服务区别
 
-![image-20210316224314015](SpringCloud笔记.assets/image-20210316224314015.png)
+![image-20210316224314015](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20210321205452.png)
 
 springcloud提供了完善的生态
 
