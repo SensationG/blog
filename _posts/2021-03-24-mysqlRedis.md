@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Mysql与Redis缓存同步方案
-date: 2020-03-24
+date: 2021-03-24
 Author: hhw
 comments: true
 toc: true
