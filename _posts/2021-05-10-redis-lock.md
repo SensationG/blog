@@ -385,7 +385,13 @@ tags:  [Redis,Lock]
 
 
 
+参考：
 
+https://blog.csdn.net/sinat_25295611/article/details/80420086
+
+https://segmentfault.com/a/1190000023038777
+
+https://www.cnblogs.com/liuqingzheng/p/11080501.html
 
 
 
