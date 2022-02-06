@@ -1135,6 +1135,383 @@ l join汇聚：所有到达并行网关，在此等待的进入分支， 直到�
 - 最分支流程走完后会进行汇聚。
 - 相关的变更与并行网关类似，暂略
 
+## 8、Activiti整合SpringBoot
+
+### 8.1添加依赖
+
+```xml
+<!-- springBoot依赖父类 -->
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.5.2</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+
+<properties>
+    <java.version>1.8</java.version>
+</properties>
+
+<dependencies>
+
+    <!-- springBoot依赖 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- mysql驱动 -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+    <!-- lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <!-- springBoot Test -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+        <exclusions>
+            <exclusion>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+
+
+    <!-- Activiti7 With spring-boot -->
+    <dependency>
+        <groupId>org.activiti</groupId>
+        <artifactId>activiti-spring-boot-starter</artifactId>
+        <version>7.0.0.Beta2</version>
+    </dependency>
+    <!-- 【activiti7必须引入该数据驱动包，否则无法正常启动】-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+
+</dependencies>
+```
+
+注意：
+
+1. activiti7必须引入spring-boot-starter-jdbc数据驱动包，否则无法正常启动
+
+### 8.2配置文件
+
+```yml
+spring:
+  # 数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # nullCatalogMeansCurrent必须配置，activiti才能自动创建表
+    url: jdbc:mysql://localhost:3306/activitiSpring?serverTimezone=UTC&nullCatalogMeansCurrent=true
+    username: root
+    password: 123456
+  # activiti 配置
+  activiti:
+    # 如果库中没有activiti表，会自动创建
+    database-schema-update: true
+    # 检测历史表是否存在，Activiti7中默认是没有开启数据库历史记录的，这里手动启用
+    db-history-used: true
+    # 记录历史记录等级，full：保存历史记录的最高级别，除了保存audit级别数据，还会保存其他全部流程相关的细节数据，包括流程参数等
+    history-level: full
+```
+
+注意：
+
+1. 配置文件的数据源配置：nullCatalogMeansCurrent必须配置，activiti才能自动创建表
+
+### 8.3SpringSecurity配置
+
+因为Activiti7和SpringBoot整合后，默认情况下，集成了SpringSecurity安全框架，这样我们就要准备SpringSecurity的相关配置信息
+
+- SpringSecurity快速工具类（官方提供Example）
+- SpringSecurity配置类
+
+SecurityUtil：
+
+```java
+package com.huang.activiti.utils;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+
+/**
+ * SpringSecurity快速工具，Activiti7官方提供的Example，用于Activiti快速鉴权
+ *
+ * @author huanghwh
+ * @date 2022/2/5 下午9:25
+ */
+@Component
+public class SecurityUtil {
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    public void logInAs(String username) {
+
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+
+        /**
+         * 用户存在判断
+         */
+        if (user == null) {
+            throw new IllegalStateException("User " + username + " doesn't exist, please provide a valid user");
+        }
+
+        SecurityContextHolder.setContext(new SecurityContextImpl(new Authentication() {
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                return user.getAuthorities();
+            }
+
+            @Override
+            public Object getCredentials() {
+                return user.getPassword();
+            }
+
+            @Override
+            public Object getDetails() {
+                return user;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return user;
+            }
+
+            @Override
+            public boolean isAuthenticated() {
+                return true;
+            }
+
+            @Override
+            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+
+            }
+
+            @Override
+            public String getName() {
+                return user.getUsername();
+            }
+        }));
+        org.activiti.engine.impl.identity.Authentication.setAuthenticatedUserId(username);
+    }
+}
+```
+
+SpringSecurityConfiguration:
+
+```java
+package com.huang.activiti.config;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * SpringSecurity快速配置类，Activiti7官方提供的Example
+ * @author huanghwh
+ * @date 2022/2/5 下午9:32
+ */
+@Configuration
+@EnableWebSecurity
+public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private Logger logger = LoggerFactory.getLogger(SpringSecurityConfiguration.class);
+
+    @Override
+    @Autowired
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(myUserDetailsService());
+    }
+
+    @Bean
+    public UserDetailsService myUserDetailsService() {
+
+        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
+
+        /**
+         * 用户角色信息，直接使用内存，暂时不连数据库，权限名字前缀必须带ROLE_
+         */
+        String[][] usersGroupsAndRoles = {
+                {"jack", "password", "ROLE_ACTIVITI_USER", "GROUP_activitiTeam"},
+                {"rose", "password", "ROLE_ACTIVITI_USER", "GROUP_activitiTeam"},
+                {"tom", "password", "ROLE_ACTIVITI_USER", "GROUP_activitiTeam"},
+                {"other", "password", "ROLE_ACTIVITI_USER", "GROUP_otherTeam"},
+                {"admin", "password", "ROLE_ACTIVITI_ADMIN"},
+        };
+
+        for (String[] user : usersGroupsAndRoles) {
+            List<String> authoritiesStrings = Arrays.asList(Arrays.copyOfRange(user, 2, user.length));
+            logger.info("> Registering new user: " + user[0] + " with the following Authorities[" + authoritiesStrings + "]");
+            inMemoryUserDetailsManager.createUser(new User(user[0], passwordEncoder().encode(user[1]),
+                    authoritiesStrings.stream().map(s -> new SimpleGrantedAuthority(s)).collect(Collectors.toList())));
+        }
+
+
+        return inMemoryUserDetailsManager;
+    }
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .csrf().disable()
+            .authorizeRequests()
+            .anyRequest()
+            .authenticated()
+            .and()
+            .httpBasic();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+### 8.4创建&部署bpmn文件
+
+- 使用CandidateGroups用户组（CandidateGroups中的内容要与SpringSecurity配置文件中的用户组名称保持一致）。这样写的好处是：当不确定到底谁来负责当前任务的时候，只要是Groups中的用户都可以来拾取这个任务
+
+- Activiti7可以自动部署流程（在SpringBoot项目启动时自动部署），前提是在resources目录下，创建一个新的目录processes，用来存放bpmn流程文件
+
+### 8.5流程测试
+
+#### 8.5.1查询所有已部署的节点
+
+```java
+@GetMapping("/listAll")
+public List<ProcessDefinition> listAll() {
+    securityUtil.logInAs("other");
+    // processRuntime与Security高度耦合，要求用户必须有ACTIVITI_USER角色
+    Page<ProcessDefinition> processDefinitionPage = processRuntime.processDefinitions(Pageable.of(0, 100));
+    List<ProcessDefinition> content = processDefinitionPage.getContent();
+    return content;
+}
+```
+
+> <font color="blue">**注意：Activiti7 提供了两个新的API ProcessRuntime和TaskRuntime，但是这两个API必须使用Spring Security，且对角色有要求。**ProcessRuntime和TaskRuntime要求角色必须有：ACTIVITI_USER，否则无法正常调用(Security的角色前缀必须带ROLE_)</font>
+>
+> 源码：
+>
+> <img src="https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20220206172615.png" alt="image-20220206172602544" style="zoom:50%;" />
+
+#### 8.5.2启动流程实例
+
+```java
+@PostMapping("/startProcess")
+public Object startProcess(@RequestBody Map<String, Object> requestMap) {
+  securityUtil.logInAs(String.valueOf(requestMap.get("username")));
+  // 设置流程参数
+  Map<String, Object> paramMap = new HashMap<>(16);
+  paramMap.put("staff", String.valueOf(requestMap.get("username")));
+  // 【这里设置组别的时候不需要加前缀GROUP_ 否则待办任务查询不到】
+  paramMap.put("officeGroup", "activitiTeam");
+  paramMap.put("managerGroup", "otherTeam");
+  paramMap.put("day", 3);
+  ProcessInstance processInstance = processRuntime.start((ProcessPayloadBuilder.start().withProcessDefinitionKey("CandidateGroupDemo1").withVariables(paramMap).build()));
+  return processInstance;
+}
+```
+
+> <font color="blue">注意：流程图的CandidateGroups使用UEL参数占位，启动实例时填充，但需要注意填充的CandidateGroups需要去掉前缀GROUP_，否则无法查询到用户的待办任务</font>
+
+#### 8.5.3任务查询
+
+> Activiti的API封装了待办任务查询，数据权限根据SpringSecurity的当前登录用户筛选。
+
+```java
+@GetMapping("/search")
+public Object search(String username) {
+  securityUtil.logInAs(username);
+  // 查询任务(会自动根据当前登录用户筛选)，(API自动查询包含个人任务和组任务)
+  Page<Task> tasks = taskRuntime.tasks(Pageable.of(0, 10));
+  List<Task> taskList = tasks.getContent();
+  return taskList;
+}
+```
+
+#### 8.5.4任务拾取与完成
+
+```java
+@GetMapping("/pickAndHandle")
+public Object pickAndHandle(String username, String taskId) {
+  securityUtil.logInAs(username);
+  // 查询任务(会自动根据当前登录用户筛选)
+  Task task = taskRuntime.task(taskId);
+  if (Objects.isNull(task)) {
+    throw new RuntimeException("task不存在");
+  }
+  if (StringUtils.isBlank(task.getAssignee())) {
+    // 负责人为空，表面需要拾取
+    taskRuntime.claim(TaskPayloadBuilder
+                      .claim()
+                      .withTaskId(taskId)
+                      .build());
+  }
+  // 完成任务
+  taskRuntime.complete(TaskPayloadBuilder
+                       .complete()
+                       .withTaskId(taskId)
+                       .build());
+  return task.getId() + " " + task.getName() + " " + "处理完成";
+}
+```
+
+#### 8.5.5流程节点查询
+
+```java
+@GetMapping("/process")
+public Object searchProcess(String username, String instanceId) {
+  securityUtil.logInAs(username);
+  // 查询实例的所有任务（流程）节点
+  HistoricTaskInstanceQuery historicTaskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
+  List<HistoricTaskInstance> list = historicTaskInstanceQuery.processInstanceId(instanceId).orderByHistoricTaskInstanceStartTime().asc().list();
+  return list;
+}
+```
+
+#### 更多查询Example
+
+https://www.jianshu.com/p/21917024c6e1
+
 
 
 
