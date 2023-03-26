@@ -8,15 +8,17 @@ toc: true
 tags:  [java,spring]
 ---
 
+> DEMO源码地址：https://gitee.com/sensationhhw/springboot-event
+
 ## 1、前言
 
 > 在项目里，经常会有一些主线业务之外的其它业务，比如，下单之后，发送通知、监控埋点、记录日志……这些非核心业务，如果全部一梭子写下去，有两个问题，一个是业务耦合，一个是串行耗时。
 >
-> ![img](https://img-blog.csdnimg.cn/img_convert/dccb2846c06e4533ea88399aac335415.webp?x-oss-process=image/format,png)
+> ![image-20230326224215811](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20230326224222.png)
 
 >使用发布订阅模式来解决这些问题：把这些操作抽象成观察者模式，也就是发布/订阅模式（这里就不讨论观察者模式和发布/订阅模式的不同），而且一般会采用多线程的方式来异步执行这些观察者方法。
 >
->![img](https://img-blog.csdnimg.cn/img_convert/2dc8ef28a999164690dbd8aa673b876f.webp?x-oss-process=image/format,png)
+>![image-20230326224234708](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/blog/20230326224234.png)
 
 ## 2、Spring Event实现发布/订阅模式
 
