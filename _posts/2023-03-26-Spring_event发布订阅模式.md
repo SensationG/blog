@@ -76,6 +76,8 @@ public class OrderMessage implements Serializable {
 >
 > 2、有2种方式：可使用注解@EventListener(OrderEvent.class)或实现ApplicationListener，二选一
 >
+> 补充@TransactionalEventListener(OrderEvent.class) //事务完成后才执行
+>
 > 3、这里定义了2种监听者为例
 >
 > 4、异步执行：@Async("myThreadExecutor") ，myThreadExecutor是自定义线程池
@@ -96,6 +98,7 @@ import org.springframework.stereotype.Service;
 public class OrderLogListener implements ApplicationListener<OrderEvent> {
     
     //@EventListener(OrderEvent.class) //可使用注解或实现ApplicationListener，二选一
+  	//@TransactionalEventListener(OrderEvent.class) //事务完成后才执行
     @Async("myThreadExecutor") // 异步执行
     @Override
     public void onApplicationEvent(OrderEvent orderEvent) {
