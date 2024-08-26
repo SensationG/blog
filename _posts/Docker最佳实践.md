@@ -1,0 +1,563 @@
+# Docker最佳实践
+
+参考文档：https://www.yuque.com/leifengyang/sutong/au0lv3sv3eldsmn8#yjd1N
+
+## 一、案例：Nginx
+
+> 案例：启动一个Nginx，并修改默认页面，最后发布出去，让所有人都能下载
+>
+> ![image-20240825140732819](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/image-20240825140732819.png)
+
+### 1.镜像基础命令
+
+1. 检索：docker search [镜像名称]
+
+   ![image-20240825140943651](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/image-20240825140943651.png)
+
+   - name：镜像名称
+   - description：描述
+   - stars：星星
+   - official：ok表示官方镜像，空表示第三方镜像
+
+2. 下载：docker pull  [镜像名称]
+
+3. 列表：docker images 
+
+4. 删除：docker rmi  [镜像名称/唯一ID]
+
+### 2.拉取nginx镜像
+
+```sh
+#拉取最新版
+docker pull nginx
+#拉取指定版本
+docker pull nginx:1.26.0
+```
+
+检查镜像是否拉取成功
+
+```sh
+hhw@192 ~ % docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+nginx        latest    a9dfdba8b719   10 days ago   193MB
+```
+
+REPOSITORY：镜像名称
+
+TAG：镜像版本
+
+ID：镜像唯一ID
+
+### 3.容器基础命令
+
+1. 运行：docker run [镜像名称/唯一ID]
+
+   如果系统找不到镜像，此时会自动下载，每次run都会创建一个新的容器
+
+2. 查看**运行时**容器：docker ps
+
+   ![image-20240825142816239](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/image-20240825142816239.png)
+
+   参数：唯一ID、镜像、容器默认启动命令、启动时间、启动状态（UP表示成功）、端口、容器名字（随机）
+
+3. 查看**所有（含关闭状态）**容器：docker ps -a
+
+4. 停止：docker stop [容器名names/容器id]
+
+5. 启动：docker start [容器名names/容器id]
+
+6. 重启：docker restart [容器名names/容器id]
+
+7. 状态：docker stats [容器名names/容器id]
+
+8. 日志：docker logs [容器名names/容器id]
+
+9. 进入：docker exec
+
+10. 删除：docker rm [容器名names/容器id]
+
+### 4.启动nginx容器
+
+> 每一个容器都代表一个运行中的应用，是镜像的运行时状态
+>
+> **每个容器都有独立的文件系统、端口、cpu、内存**
+
+启动nginx镜像（会创建一个新的容器并启动，-d：后台运行，--name：指定名字，-p：端口映射，外部端口:容器端口）
+
+```sh
+docker run -d --name mynginx -p 8090:80 nginx
+```
+
+此时访问本机的8090端口可以映射到容器的80端口
+
+### 5.进入容器文件系统
+
+```sh
+# -it：交互模式
+docker exec -it [容器名称/id] /bin/bash
+docker exec -it mynginx /bin/bash
+```
+
+可以发现进入容器后，目录是根linux一样的文件结构，nginx的静态页面路径在官网中有写：
+
+```
+/usr/share/nginx/html
+```
+
+修改页面（由于容器是轻量级，所以没有vim工具，暂时通过这种方式修改文件）
+
+```sh
+echo "<h1>hello,hhw</h1>" > index.html 
+```
+
+退出：
+
+```sh
+exit
+```
+
+### 6.发布给别人
+
+**提交**
+
+```sh
+docker commit -m "提交信息" [镜像名] [版本号]
+docker commit -m "hhw publish" mynginx mynginx:v1.0
+```
+
+此时查询镜像会发现多了一个自己的镜像，Tag：v1.0
+
+```sh
+hhw@192 ~ % docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+mynginx      v1.0      3108092b02cd   18 seconds ago   193MB
+nginx        latest    a9dfdba8b719   10 days ago      193MB
+```
+
+**保存打包镜像**
+
+打包后可以发送给别人使用
+
+```sh
+docker save -o mynginx.tar mynginx:v1.0
+# mynginx.tar：打包后的文件名
+# mynginx:v1.0：镜像完整名称（name:tag）
+```
+
+别人读取镜像压缩包，这样别人的docker也有了这个镜像
+
+```sh
+docker load -i mynginx.tar
+```
+
+### 7.分享到社区
+
+登录docker
+
+```sh
+docker login
+```
+
+修改镜像名称（根据docker hub标准：用户名+镜像）
+
+```sh
+docker tag mynginx:v1.0 huanghaoweihua/mynginx:v1.0
+```
+
+推送
+
+```sh
+docker push [镜像名称]
+#测试推送成功，成功后可登录dockerhub网页查看
+docker push huanghaoweihua/mynginx:v1.0
+hhw@192 ~ % docker push huanghaoweihua/mynginx:v1.0 
+The push refers to repository [docker.io/huanghaoweihua/mynginx]
+e14626c8d1a0: Pushed 
+dbab4d343f50: Mounted from library/nginx 
+58368d2a546d: Mounted from library/nginx 
+ae6c6172dcd0: Mounted from library/nginx 
+ea4e0f8b7e97: Mounted from library/nginx 
+ebc81e68bdc0: Mounted from library/nginx 
+d9d0142ee21c: Mounted from library/nginx 
+07d2ee3f5712: Mounted from library/nginx 
+v1.0: digest: sha256:1fe0e1f563937b4632fa59771fe26725bb591beb7562d35bf39abef32d2396a7 size: 1986
+```
+
+## 二、docker存储
+
+> 上接一、案例nginx，以该基础讲解docker存储规则 （每个容器都有自己的存储系统，数据隔离）
+
+<font color="blue">限制：在run容器时就需要指定参数进行映射，如果是已经启动的容器无法再进行映射</font>
+
+### 1.目录挂载
+
+使用**目录挂载**技术，将容器内的目录映射到外部机器目录，这样可以很方便地修改文件。
+
+挂载后文件**以外部目录为主**，默认是空目录，需要往里面放文件，即使删除镜像，外部的目录和文件依然存在，下次可供其他容器使用。
+
+```sh
+# -v [外部目录]:[容器目录]，可以重复多个-v
+docker run -d --name mynginx -p 8090:80 -v [外部目录]:[容器目录] nginx
+```
+
+### 2.卷映射（修改nginx配置文件）
+
+根据官方文档，nginx的配置文件在容器的路径如下：
+
+```sh
+/etc/nginx
+```
+
+这时就不能使用目录挂载技术了（目录默认为空导致nginx启动失败），需要使用卷映射技术（区别是启动时会**以容器内部的文件为准**，删除镜像时卷不会被删除）：
+
+```sh
+# -v [卷名]:[容器目录]，可以重复多个-v，卷名不以./或/开头
+docker run -d --name mynginx -p 8090:80 -v [卷名]:[容器目录] nginx
+
+docker run -d --name mynginx -p 8090:80 -v mynginx:/etc/nginx nginx
+```
+
+卷docker统一放置在外部目录下，只需要在该目录的`_data`目录下修改配置文件即可：
+
+(
+
+注意：mac无法找到对应的位置，需要使用debian进入才能看到
+
+`docker run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh`
+
+)
+
+```sh
+/var/lib/docker/volumes/卷名
+```
+
+扩展：
+
+```sh
+#查询所有卷
+docker volume ls
+#创建卷
+docker volume create [卷名]
+#卷所在的位置
+docker volume inspect [卷名]
+```
+
+## 三、docker容器间网络
+
+### 1.查看容器地址
+
+docker会为每个容器分配一个ip地址，容器之间可以通过ip地址相互访问(docker内网)
+
+```sh
+# 查看容器细节
+docker inspect [容器名称]
+docker inspect mynginx
+
+# 找到network，得知容器地址为：172.17.0.2
+"Networks": {
+      "bridge": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:11:00:02",
+          "NetworkID": "b1da47f51cb00c16a2620951e84a51797cbc51016c120bae82c8ad0957d11670",
+          "EndpointID": "90a6cd576056e573b66004688c22b93a1b282a0c065f4e5ba80f0ca4d04a4529",
+          "Gateway": "172.17.0.1",
+          "IPAddress": "172.17.0.2",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DriverOpts": null,
+          "DNSNames": null
+      }
+  }
+
+```
+
+### 2.通过ip访问
+
+通过**内部ip**访问（仅限docker容器互相访问，外部网络无法通过内网ip访问容器）
+
+```sh
+# mynginx为容器名
+hhw@192 ~ % docker exec -it mynginx /bin/bash
+root@2ce086618d20:/# curl 172.17.0.2:80
+```
+
+### 3.通过域名访问
+
+通过**域名**访问（域名不变，ip可能因环境变而变，所以推荐使用域名访问）
+
+创建一个docker网络（默认的docker0不支持域名访问，所以我们要新建一个）
+
+```sh
+# docker network create [网络名]
+docker network create mynet
+```
+
+查看网络列表
+
+```sh
+docker network ls
+```
+
+启动容器时指定网络：
+
+```sh
+# --network [网络名]
+docker run -d -p 8090:80 --name nginxWithMynet --network mynet nginx
+```
+
+通过容器名访问
+
+```sh
+# curl http://[容器名]:80
+curl http://nginxWithMynet:80
+```
+
+### 4.案例：Redis集群
+
+注意：这种情况仅redis部署在同一台docker时走容器间网络访问，如果部署在不同服务器，还是得都外部网络。
+
+![image-20240825202656775](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/image-20240825202656775.png)
+
+- 启动redis0（主机）、redis1（从机）
+
+  - 这里使用第三方镜像方便操作（https://hub.docker.com/r/bitnami/redis）：bitnami/redis 
+  - --network：共用同一个自定义网络：mynet（步骤见3.3通过域名访问），从机连接主机时，可以直接使用容器名：redis-master
+  - -v：数据目录挂载到外部（步骤见2.1目录挂载）若有权限问题：`chmod -R 777 [目录]`
+  - -e：指定参数（可指定参数可以在dockerhub官方中查询，这里是指定redis的模式、密码）
+  - 小技巧：通过反斜杠可以换行，让指令可以更清晰地输入
+
+  ```sh
+  # 启动redis0
+  docker run -d -p 6379:6379 \
+  > -v /Users/hhw/Documents/docker/redis-master-data:/bitnami/redis/data \
+  > -e REDIS_REPLICATION_MODE=master \
+  > -e REDIS_PASSWORD=123456 \
+  > --network mynet \
+  > --name redis-master \
+  > bitnami/redis   
+  
+  # 启动redis1
+  docker run -d -p 6380:6379 \
+  > -v /Users/hhw/Documents/docker/redis-slave-data:/bitnami/redis/data \
+  > -e REDIS_REPLICATION_MODE=slave \
+  > -e REDIS_MASTER_HOST=redis-master \
+  > -e REDIS_MASTER_PORT_NUMBER=6379 \
+  > -e REDIS_MASTER_PASSWORD=123456 \
+  > -e REDIS_PASSWORD=123456 \
+  > --network mynet \
+  > --name redis-slave \
+  > bitnami/redis 
+  ```
+
+## 四、docker-compose
+
+> 说明：docker compose是用来批量管理容器的工具
+>
+> 1. 通过配置compose.yml可以批量创建、启动、下线、扩容多个容器
+>
+>    ![image-20240825211910135](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/image-20240825211910135.png)
+
+### 1.案例：wordpress博客系统
+
+- 部署一个wordpress需要启动wordpress应用服务以及mysql数据库，使用docker compose支持一键部署而无需单独分开部署这2个应用。
+
+- 传统的命令行启动容器
+
+  ```yml
+  #步骤1：创建网络
+  docker network create blog
+  
+  #步骤2：启动mysql
+  docker run -d -p 3306:3306 \
+  -e MYSQL_ROOT_PASSWORD=123456 \
+  -e MYSQL_DATABASE=wordpress \
+  -v mysql-data:/var/lib/mysql \
+  -v /app/myconf:/etc/mysql/conf.d \
+  --restart always --name mysql \
+  --network blog \
+  mysql:8.0
+  
+  #步骤3：启动wordpress
+  docker run -d -p 8080:80 \
+  -e WORDPRESS_DB_HOST=mysql \
+  -e WORDPRESS_DB_USER=root \
+  -e WORDPRESS_DB_PASSWORD=123456 \
+  -e WORDPRESS_DB_NAME=wordpress \
+  -v wordpress:/var/www/html \
+  --restart always --name wordpress-app \
+  --network blog \
+  wordpress:latest
+  ```
+
+- 使用compose.yaml一键启动容器
+
+  compose的编写指南可以参考官方文档：https://docs.docker.com/reference/compose-file/services/#environment
+
+  顶级元素：
+
+  ```yml
+  name：名称
+  services：要启动的所有应用
+  
+  ```
+
+  编写一个示例文件，cd到yaml的目录下，执行命令：`docker compose up -d`后台启动
+
+  ```yml
+  name: myblog
+  services:
+    mysql:
+      container_name: mysql
+      image: mysql:8.0
+      # -短横线表示数组
+      ports:
+        - "3306:3306"
+      # 环境变量
+      environment:
+        - MYSQL_ROOT_PASSWORD=123456
+        - MYSQL_DATABASE=wordpress
+      # 目录挂载
+      volumes:
+        - mysql-data:/var/lib/mysql
+        - /app/myconf:/etc/mysql/conf.d
+      # 开机自启
+      restart: always
+      networks:
+        - blog
+  
+    wordpress:
+      image: wordpress
+      ports:
+        - "8080:80"
+      environment:
+        WORDPRESS_DB_HOST: mysql
+        WORDPRESS_DB_USER: root
+        WORDPRESS_DB_PASSWORD: 123456
+        WORDPRESS_DB_NAME: wordpress
+      volumes:
+        - wordpress:/var/www/html
+      restart: always
+      networks:
+        - blog
+      # 启动时依赖谁（意味着mysql会先启动）
+      depends_on:
+        - mysql
+  
+  # services里面的卷映射需要在这里声明（卷映射需要，目录挂载不需要）
+  volumes:
+    mysql-data:
+    wordpress:
+  
+  networks:
+    blog:
+  ```
+
+  特性：
+
+  - 增量更新
+
+    修改 Docker Compose 文件。重新启动应用。只会触发修改项的重新启动。
+
+  - 数据不删
+
+    默认就算down了容器，所有挂载的卷不会被移除。比较安全
+
+  - 如果需要指定compose文件
+
+    ```sh
+    docker compose -f [compose.yaml文件] up
+    ```
+
+  - compose下线
+
+    ```sh
+    # 不会删除卷
+    docker compose down
+    # 删除所有（包括卷、镜像）
+    docker compose down --rmi all -v 
+    ```
+
+## 五、dockerfile制作镜像
+
+> 官方文档：https://docs.docker.com/reference/dockerfile/
+
+### 1. 案例：制作一个java应用镜像
+
+- 编写dockerfile文件
+
+  ```sh
+  # 指定镜像基础环境（openjdk:17是镜像名+版本，docker会自动帮我们下载）
+  FROM openjdk:17
+  
+  # 自定义标签
+  LABEL author=huanghaoweihua
+  
+  # 复制文件到镜像 copy [当前jar包所在的路径] [拷贝至容器中所在的路径]
+  # 样例的app.jar与dockerfile同级，所以直接写，第二个参数表示将jar复制到容器的/usr/local/中
+  COPY app.jar /usr/local/app.jar
+  
+  # 容器内启动的端口
+  EXPOSE 8080
+  
+  # 容器启动命令，数组格式
+  ENTRYPOINT ["java","-jar","/usr/local/app.jar"]
+  ```
+
+- 执行命令
+
+  ```sh
+  # docker build -f [dockerfile文件] -t [镜像名称:版本号] [jar所在的目录 “.”即“./”表示当前目录]
+  docker build -f Dockerfile -t myjavaapp:v1.0 .
+  ```
+
+- 制作成功
+
+  ![](https://blog-1302755396.cos.ap-shanghai.myqcloud.com/image-20240826220405985.png)
+
+- 查看镜像
+
+  ```sh
+  hhw@192 镜像制作测试 % docker images    
+  REPOSITORY               TAG       IMAGE ID       CREATED              SIZE
+  myjavaapp                v1.0      ed97bfacf338   About a minute ago   521MB
+  ```
+
+- 启动镜像
+
+  ```sh
+  docker run -d -p 8888:8080 myjavaapp:v1.0
+  ```
+
+  进入容器内部文件系统，可以看到app.jar在`/usr/local`中
+
+  ```sh
+  bash-4.4# pwd
+  /usr/local
+  bash-4.4# ls
+  app.jar  bin  etc  games  include  lib	lib64  libexec	sbin  share  src
+  ```
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
