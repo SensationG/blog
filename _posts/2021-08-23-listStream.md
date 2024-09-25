@@ -40,5 +40,12 @@ CostCollectProjects lastCollectProject = oldCollectProjectsList.stream().max(Com
 String projectNames = submitCostProjectList.stream().map(CostCollectProjectsDto::getProjectName).collect(Collectors.joining(","));
 ```
 
-
+**6.使用sort排序**
+直接基于原list排序，无需重新赋值
+```java
+// 先根据reviewTime排序，再根据addtime排序，为null的排在后面
+result.sort(Comparator
+                    .comparing(RepReviewInfoDto::getReviewTime, Comparator.nullsLast(Comparator.naturalOrder()))  
+                    .thenComparing(RepReviewInfoDto::getAddtime, Comparator.nullsLast(Comparator.naturalOrder())));
+```
 
